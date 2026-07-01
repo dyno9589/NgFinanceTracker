@@ -1,0 +1,74 @@
+<h1 class="page-title">Market Dashboard</h1>
+
+<!-- Market Sentiment Banner -->
+<div class="sentiment-banner" [class]="sentiment().toLowerCase()">
+  Market Sentiment: <strong>{{ sentiment() }}</strong>
+</div>
+
+<!-- Indices Grid -->
+<h2 class="section-title">📊 Market Indices</h2>
+<div class="indices-grid">
+  @for (idx of indices(); track idx.name) {
+    <div class="index-card" [class.up]="idx.change >= 0" [class.down]="idx.change < 0">
+      <span class="name">{{ idx.name }}</span>
+      <strong class="value">{{ idx.value | number:'1.2-2' }}</strong>
+      <span class="change">
+        {{ idx.change >= 0 ? '▲' : '▼' }}
+        {{ idx.change | number:'1.2-2' }}
+        ({{ idx.changePercent | number:'1.2-2' }}%)
+      </span>
+    </div>
+  }
+</div>
+
+<!-- Portfolio Summary -->
+<h2 class="section-title">💼 Your Portfolio</h2>
+<div class="portfolio-summary">
+  <div class="mini-card">
+    <span>Invested</span>
+    <strong>₹{{ mfSummary().totalInvested | number:'1.0-0' }}</strong>
+  </div>
+  <div class="mini-card">
+    <span>Current</span>
+    <strong>₹{{ mfSummary().currentValue | number:'1.0-0' }}</strong>
+  </div>
+  <div class="mini-card" [class.profit]="mfSummary().totalPnL >= 0">
+    <span>P&L</span>
+    <strong>₹{{ mfSummary().totalPnL | number:'1.0-0' }}</strong>
+  </div>
+</div>
+
+<!-- Gainers & Losers side by side -->
+<div class="two-column">
+  <div class="stock-list">
+    <h3>🚀 Top Gainers</h3>
+    @for (stock of gainers(); track stock.symbol) {
+      <div class="stock-row">
+        <div>
+          <strong>{{ stock.symbol }}</strong>
+          <small>{{ stock.companyName }}</small>
+        </div>
+        <div class="right">
+          <strong>₹{{ stock.price | number:'1.2-2' }}</strong>
+          <span class="profit">+{{ stock.changePercent | number:'1.2-2' }}%</span>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="stock-list">
+    <h3>📉 Top Losers</h3>
+    @for (stock of losers(); track stock.symbol) {
+      <div class="stock-row">
+        <div>
+          <strong>{{ stock.symbol }}</strong>
+          <small>{{ stock.companyName }}</small>
+        </div>
+        <div class="right">
+          <strong>₹{{ stock.price | number:'1.2-2' }}</strong>
+          <span class="loss">{{ stock.changePercent | number:'1.2-2' }}%</span>
+        </div>
+      </div>
+    }
+  </div>
+</div>

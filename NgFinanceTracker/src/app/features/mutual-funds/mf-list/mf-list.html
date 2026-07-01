@@ -1,0 +1,89 @@
+<!-- Page header -->
+<div class="page-header">
+  <div>
+    <h1>Mutual Funds Portfolio</h1>
+    <p class="subtitle">Track your MF investments and NAV</p>
+  </div>
+  <button class="btn primary" (click)="refresh()" [disabled]="loading()">
+    {{ loading() ? '⏳ Refreshing...' : '🔄 Refresh NAV' }}
+  </button>
+</div>
+
+<!-- Summary cards - notice we CALL signals with () -->
+<div class="summary-grid">
+  <div class="card">
+    <span class="label">Total Invested</span>
+    <strong>₹{{ summary().totalInvested | number:'1.0-0' }}</strong>
+  </div>
+
+  <div class="card">
+    <span class="label">Current Value</span>
+    <strong>₹{{ summary().currentValue | number:'1.0-0' }}</strong>
+  </div>
+
+  <div class="card"
+       [class.profit]="summary().totalPnL >= 0"
+       [class.loss]="summary().totalPnL < 0">
+    <span class="label">Total P&L</span>
+    <strong>
+      ₹{{ summary().totalPnL | number:'1.0-0' }}
+      <small>({{ summary().totalPnLPercent | number:'1.2-2' }}%)</small>
+    </strong>
+  </div>
+
+  <div class="card">
+    <span class="label">Active SIPs</span>
+    <strong>{{ summary().activeSIPs }}</strong>
+  </div>
+</div>
+
+<!-- Funds table using the NEW @for syntax (Angular 17+) -->
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Scheme Name</th>
+        <th>Category</th>
+        <th>Units</th>
+        <th>Avg NAV</th>
+        <th>Current NAV</th>
+        <th>Invested</th>
+        <th>Current Value</th>
+        <th>P&L</th>
+        <th>SIP</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (fund of funds(); track fund.id) {
+        <tr>
+          <td class="scheme-name">{{ fund.schemeName }}</td>
+          <td><span class="badge">{{ fund.category }}</span></td>
+          <td>{{ fund.units | number:'1.2-2' }}</td>
+          <td>₹{{ fund.avgNav | number:'1.2-2' }}</td>
+          <td>₹{{ fund.currentNav | number:'1.2-2' }}</td>
+          <td>₹{{ fund.investedAmount | number:'1.0-0' }}</td>
+          <td>₹{{ fund.units * fund.currentNav | number:'1.0-0' }}</td>
+          <td [class.profit]="calcPnL(fund) >= 0"
+              [class.loss]="calcPnL(fund) < 0">
+            ₹{{ calcPnL(fund) | number:'1.0-0' }}
+          </td>
+          <td>
+            @if (fund.sipActive) {
+              <span class="sip-active">✅ ₹{{ fund.sipAmount }}</span>
+            } @else {
+              <span class="sip-inactive">—</span>
+            }
+          </td>
+          <td>
+            <button class="btn-icon" (click)="remove(fund.id)" title="Delete">🗑</button>
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="10" class="empty">No mutual funds yet.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

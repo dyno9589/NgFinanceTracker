@@ -1,0 +1,10 @@
+ .header {
+      background: white;
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    h1 { font-size: 1.2rem; margin: 0; color: #0f172a; }
+    .date { color: #64748b; font-size: .9rem; }

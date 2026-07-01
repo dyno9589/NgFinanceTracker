@@ -1,0 +1,46 @@
+ <h1>My Holdings</h1>
+
+    <div class="summary">
+      <div class="card">
+        <span>Invested</span>
+        <strong>₹{{ summary().totalInvested | number:'1.0-0' }}</strong>
+      </div>
+      <div class="card">
+        <span>Current</span>
+        <strong>₹{{ summary().currentValue | number:'1.0-0' }}</strong>
+      </div>
+      <div class="card" [class.profit]="summary().totalPnL >= 0" [class.loss]="summary().totalPnL < 0">
+        <span>P&L</span>
+        <strong>₹{{ summary().totalPnL | number:'1.0-0' }}
+          ({{ summary().totalPnLPercent | number:'1.2-2' }}%)</strong>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Symbol</th><th>Company</th><th>Qty</th>
+            <th>Avg Price</th><th>LTP</th><th>Value</th><th>P&L</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (h of holdings(); track h.id) {
+            <tr>
+              <td><strong>{{ h.symbol }}</strong></td>
+              <td>{{ h.companyName }}</td>
+              <td>{{ h.quantity }}</td>
+              <td>₹{{ h.avgBuyPrice }}</td>
+              <td>₹{{ h.currentPrice }}</td>
+              <td>₹{{ h.currentPrice * h.quantity | number:'1.0-0' }}</td>
+              <td [class.profit]="h.currentPrice > h.avgBuyPrice"
+                  [class.loss]="h.currentPrice < h.avgBuyPrice">
+                ₹{{ (h.currentPrice - h.avgBuyPrice) * h.quantity | number:'1.0-0' }}
+              </td>
+            </tr>
+          } @empty {
+            <tr><td colspan="7" class="empty">No holdings yet</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
